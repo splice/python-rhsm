@@ -5,7 +5,7 @@
 
 
 Name: python-rhsm
-Version: 0.96.12
+Version: 0.96.13
 Release: 1%{?dist}
 
 Summary: A Python library to communicate with a Red Hat Unified Entitlement Platform
@@ -62,6 +62,9 @@ rm -rf %{buildroot}
 %attr(640,root,root) %{_sysconfdir}/rhsm/ca/*.pem
 
 %changelog
+* Tue Oct 04 2011 James Bowes <jbowes@redhat.com> 0.96.13-1
+- 737935: overcome 255 char limit in uuid list (cduryee@redhat.com)
+
 * Tue Sep 13 2011 Devan Goodwin <dgoodwin@rm-rf.ca> 0.96.12-1
 - Add makefile and targets for coverage and "stylish" checks
   (alikins@redhat.com)
