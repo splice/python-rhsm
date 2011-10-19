@@ -5,7 +5,7 @@
 
 
 Name: python-rhsm
-Version: 0.96.14
+Version: 0.96.15
 Release: 1%{?dist}
 
 Summary: A Python library to communicate with a Red Hat Unified Entitlement Platform
@@ -62,6 +62,9 @@ rm -rf %{buildroot}
 %attr(640,root,root) %{_sysconfdir}/rhsm/ca/*.pem
 
 %changelog
+* Wed Oct 19 2011 James Bowes <jbowes@redhat.com> 0.96.15-1
+- 721065: rename future_date with entitle_date. (jesusr@redhat.com)
+
 * Wed Oct 19 2011 James Bowes <jbowes@redhat.com> 0.96.14-1
 - 746241: UEPConnection.updateConsumer now passes empty list in POST request
   (mstead@redhat.com)
