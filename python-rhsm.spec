@@ -5,7 +5,7 @@
 
 
 Name: python-rhsm
-Version: 0.96.13
+Version: 0.96.14
 Release: 1%{?dist}
 
 Summary: A Python library to communicate with a Red Hat Unified Entitlement Platform
@@ -62,6 +62,10 @@ rm -rf %{buildroot}
 %attr(640,root,root) %{_sysconfdir}/rhsm/ca/*.pem
 
 %changelog
+* Wed Oct 19 2011 James Bowes <jbowes@redhat.com> 0.96.14-1
+- 746241: UEPConnection.updateConsumer now passes empty list in POST request
+  (mstead@redhat.com)
+
 * Tue Oct 04 2011 James Bowes <jbowes@redhat.com> 0.96.13-1
 - 737935: overcome 255 char limit in uuid list (cduryee@redhat.com)
 
