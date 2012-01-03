@@ -5,7 +5,7 @@
 
 
 Name: python-rhsm
-Version: 0.98.8
+Version: 0.98.9
 Release: 1%{?dist}
 
 Summary: A Python library to communicate with a Red Hat Unified Entitlement Platform
@@ -62,6 +62,11 @@ rm -rf %{buildroot}
 %attr(640,root,root) %{_sysconfdir}/rhsm/ca/*.pem
 
 %changelog
+* Tue Jan 03 2012 William Poteat <wpoteat@redhat.com> 0.98.9-1
+- 768983: When consuming a future subscription, the repos --list should be
+  empty. (wpoteat@redhat.com)
+- 720360: Write *-key.pem files out with 0600 permissions. (awood@redhat.com)
+
 * Mon Dec 19 2011 William Poteat <wpoteat@redhat.com> 0.98.8-1
 - 754425: Remove grace period logic (cduryee@redhat.com)
 
