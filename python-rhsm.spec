@@ -5,7 +5,7 @@
 
 
 Name: python-rhsm
-Version: 0.99.8
+Version: 0.99.9
 Release: 1%{?dist}
 
 Summary: A Python library to communicate with a Red Hat Unified Entitlement Platform
@@ -62,6 +62,9 @@ rm -rf %{buildroot}
 %attr(640,root,root) %{_sysconfdir}/rhsm/ca/*.pem
 
 %changelog
+* Fri Apr 13 2012 Adrian Likins <alikins@redhat.com> 0.99.9-1
+- 811638: Fix issues with release with candlepin 0.5.26 (alikins@redhat.com)
+
 * Wed Apr 04 2012 Michael Stead <mstead@redhat.com> 0.99.8-1
 - 807721: Setting missing default values (mstead@redhat.com)
 
