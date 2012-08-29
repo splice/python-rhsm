@@ -366,7 +366,7 @@ class Restlib(object):
         return json.loads(result['content'])
 
     def validateResponse(self, response):
-        if str(response['status']) not in ["200", "204"]:
+        if str(response['status']) not in ["200", "202", "204"]:
             parsed = {}
             try:
                 parsed = json.loads(response['content'])
@@ -410,6 +410,37 @@ class Restlib(object):
 
     def request_delete(self, method):
         return self._request("DELETE", method)
+
+
+class SpliceConnection:
+    """
+    class for talking to splice
+    """
+
+    def __init__(self, host=None, ssl_port=None, handler=None,
+                rhic=None, insecure=None):
+        self.host = host or config.get('splice', 'hostname')
+        self.ssl_port = ssl_port or safe_int(config.get('splice', 'port'))
+        self.ssl_verify_depth = safe_int(config.get('server', 'ssl_verify_depth'))
+        self.rhic = rhic or config.get('splice', 'rhic')
+        self.ca_cert_dir = config.get('splice', 'ca_cert_dir')
+        self.handler = handler or config.get('splice', 'prefix')
+        self.rhic_ca_cert = config.get('splice', 'rhic_ca_cert')
+
+        self.insecure = insecure
+        if insecure is None:
+            self.insecure = False
+            config_insecure = safe_int(config.get('splice', 'insecure'))
+            if config_insecure:
+                self.insecure = True
+
+        self.conn = Restlib(self.host, self.ssl_port, self.handler,
+                            cert_file=self.rhic, ca_dir=self.ca_cert_dir, insecure=self.insecure,
+                            ssl_verify_depth=self.ssl_verify_depth)
+        log.info("Using rhic authentication: rhic = %s, "
+                 "ca = %s, insecure = %s" %
+                 (self.rhic, self.ca_cert_dir, self.insecure))
+
 
 
 # FIXME: there should probably be a class here for just

@@ -590,6 +590,15 @@ class Key(object):
     def __str__(self):
         return self.content
 
+class RHICertificate(Certificate):
+    """
+    Represents a RHIC, which has a cert and a key. We only care about the
+    key when creating SSL connections, so we just need the cert for most
+    purposes.
+
+    """
+    def getCN(self):
+        return self.subject().get('CN') 
 
 class DateRange:
     """
