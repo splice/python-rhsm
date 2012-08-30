@@ -441,6 +441,22 @@ class SpliceConnection:
                  "ca = %s, insecure = %s" %
                  (self.rhic, self.ca_cert_dir, self.insecure))
 
+    def getCerts(self, identity_cert, consumer_identifier, installed_products=None, facts={}):
+        params = {}
+        params['identity_cert'] = identity_cert.x509.as_pem()
+        params['consumer_identifier'] = consumer_identifier
+        params['products'] = installed_products
+        params['system_facts'] = facts.to_dict()
+
+        response = self.conn.request_put("/api/v1/entitlement/%s/" % identity_cert.subject['CN'], params)
+
+        to_return = {}
+        to_return['cert'] = response['certs'][0][0]
+        to_return['key'] = response['certs'][0][1]
+        to_return['serial'] = response['certs'][0][2]
+
+        return to_return
+
 
 
 # FIXME: there should probably be a class here for just
