@@ -590,6 +590,7 @@ class Key(object):
     def __str__(self):
         return self.content
 
+
 class DateRange:
     """
     Date range object.

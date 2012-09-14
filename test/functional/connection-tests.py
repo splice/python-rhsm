@@ -15,7 +15,7 @@
 
 import unittest
 
-from rhsm.connection import ContentConnection, UEPConnection
+from rhsm.connection import ContentConnection, UEPConnection, SpliceConnection, AcceptedException, RemoteServerException
 
 
 class ConnectionTests(unittest.TestCase):
@@ -51,4 +51,50 @@ class ContentConnectionTests(unittest.TestCase):
 
     def testInsecure(self):
         ContentConnection(host="127.0.0.1", insecure=True)
+
+class StubRestlib():
+
+    def __init__(self, retcode=None):
+        self.retcode = retcode
+
+    def request_put(self, url=None, params={}):
+        if self.retcode == 202:
+            raise AcceptedException("accepted!")
+        elif self.retcode == 404:
+            raise RemoteServerException(code=404)
+
+class StubRhic():
+
+    class StubX509():
+        def as_pem(self):
+            return "PEMPEMPEM"
+
+    def __init__(self, retcode=None):
+        self.x509 = self.StubX509()
+        self.subject = {}
+        self.subject['CN'] = 'CN=ABLOOBLAABLOOO'
+
+
+
+class SpliceConnectionTests(unittest.TestCase):
+
+    def test_202(self):
+        splice_conn = SpliceConnection(host="127.0.0.1", ssl_port=443, handler='/foo', rhic='/foo/bar',
+                            insecure=True, ca_cert_dir='/baz', rhic_ca_cert='/qux')
+
+        splice_conn.conn = StubRestlib(202)
+
+        with self.assertRaises(AcceptedException):
+            splice_conn.getCerts(identity_cert=StubRhic(), consumer_identifier=None)
+
+    def test_404(self):
+        splice_conn = SpliceConnection(host="127.0.0.1", ssl_port=443, handler='/foo', rhic='/foo/bar',
+                            insecure=True, ca_cert_dir='/baz', rhic_ca_cert='/qux')
+
+        splice_conn.conn = StubRestlib(404)
+
+        with self.assertRaises(RemoteServerException) as rse:
+            splice_conn.getCerts(identity_cert=StubRhic(), consumer_identifier=None)
+
+        self.assertEqual(rse.exception.code, 404)
 

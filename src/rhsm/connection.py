@@ -105,6 +105,15 @@ class NetworkException(ConnectionException):
         return "Network error code: %s" % self.code
 
 
+class AcceptedException(ConnectionException):
+
+    def __init__(self, code):
+        self.code = code
+
+    def __str__(self):
+        return "Accepted response code: %s" % self.code
+
+
 class RemoteServerException(ConnectionException):
 
     def __init__(self, code):
@@ -366,7 +375,7 @@ class Restlib(object):
         return json.loads(result['content'])
 
     def validateResponse(self, response):
-        if str(response['status']) not in ["200", "202", "204"]:
+        if str(response['status']) not in ["200", "204"]:
             parsed = {}
             try:
                 parsed = json.loads(response['content'])
@@ -382,6 +391,9 @@ class Restlib(object):
             if str(response['status']) == "410":
                 raise GoneException(response['status'],
                         parsed['displayMessage'], parsed['deletedId'])
+
+            if str(response['status']) == "202":
+                raise AcceptedException()
 
             error_msg = self._parse_msg_from_error_response_body(parsed)
             raise RestlibException(response['status'], error_msg)
@@ -418,14 +430,14 @@ class SpliceConnection:
     """
 
     def __init__(self, host=None, ssl_port=None, handler=None,
-                rhic=None, insecure=None):
+                rhic=None, insecure=None, ca_cert_dir=None, rhic_ca_cert=None):
         self.host = host or config.get('splice', 'hostname')
         self.ssl_port = ssl_port or safe_int(config.get('splice', 'port'))
         self.ssl_verify_depth = safe_int(config.get('server', 'ssl_verify_depth'))
         self.rhic = rhic or config.get('splice', 'rhic')
-        self.ca_cert_dir = config.get('splice', 'ca_cert_dir')
+        self.ca_cert_dir = ca_cert_dir or config.get('splice', 'ca_cert_dir')
         self.handler = handler or config.get('splice', 'prefix')
-        self.rhic_ca_cert = config.get('splice', 'rhic_ca_cert')
+        self.rhic_ca_cert = rhic_ca_cert or config.get('splice', 'rhic_ca_cert')
 
         self.insecure = insecure
         if insecure is None:
@@ -441,12 +453,12 @@ class SpliceConnection:
                  "ca = %s, insecure = %s" %
                  (self.rhic, self.ca_cert_dir, self.insecure))
 
-    def getCerts(self, identity_cert, consumer_identifier, installed_products=None, facts={}):
+    def getCerts(self, identity_cert, consumer_identifier, installed_products=None, facts_dict={}):
         params = {}
         params['identity_cert'] = identity_cert.x509.as_pem()
         params['consumer_identifier'] = consumer_identifier
         params['products'] = installed_products
-        params['system_facts'] = facts.to_dict()
+        params['system_facts'] = facts_dict
 
         response = self.conn.request_put("/api/v1/entitlement/%s/" % identity_cert.subject['CN'], params)
 
@@ -456,7 +468,6 @@ class SpliceConnection:
         to_return['serial'] = response['certs'][0][2]
 
         return to_return
-
 
 
 # FIXME: there should probably be a class here for just
