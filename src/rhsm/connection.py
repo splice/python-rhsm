@@ -375,6 +375,10 @@ class Restlib(object):
         return json.loads(result['content'])
 
     def validateResponse(self, response):
+        # todo: this might get moved down if json is coming back from rcs
+        if str(response['status']) == "202":
+            raise AcceptedException(response['status'])
+
         if str(response['status']) not in ["200", "204"]:
             parsed = {}
             try:
@@ -392,8 +396,6 @@ class Restlib(object):
                 raise GoneException(response['status'],
                         parsed['displayMessage'], parsed['deletedId'])
 
-            if str(response['status']) == "202":
-                raise AcceptedException()
 
             error_msg = self._parse_msg_from_error_response_body(parsed)
             raise RestlibException(response['status'], error_msg)
