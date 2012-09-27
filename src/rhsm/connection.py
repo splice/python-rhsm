@@ -375,12 +375,11 @@ class Restlib(object):
         return json.loads(result['content'])
 
     def validateResponse(self, response):
-        # XXX: uncomment once 202 works from rcs
         # todo: this might get moved down if json is coming back from rcs
-        #if str(response['status']) == "202":
-        #    raise AcceptedException(response['status'])
+        if str(response['status']) == "202":
+            raise AcceptedException(response['status'])
 
-        if str(response['status']) not in ["200", "202", "204"]:
+        if str(response['status']) not in ["200", "204"]:
             parsed = {}
             try:
                 parsed = json.loads(response['content'])
