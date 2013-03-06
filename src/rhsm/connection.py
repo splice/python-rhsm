@@ -730,6 +730,15 @@ class UEPConnection:
         method = '/consumers/%s' % self.sanitize(uuid)
         return self.conn.request_get(method)
 
+    def getConsumers(self, owner=None):
+        """
+        Returns a list of consumers
+        """
+        method = '/consumers/'
+        if owner:
+            method = "%s?owner=%s" % (method, owner)
+        return self.conn.request_get(method)
+
     def getOwner(self, uuid):
         """
         Returns an owner object with pem/key for existing consumers
@@ -825,6 +834,15 @@ class UEPConnection:
     def unbindAll(self, consumerId):
         method = "/consumers/%s/entitlements" % self.sanitize(consumerId)
         return self.conn.request_delete(method)
+
+    def checkin(self, consumerId, checkin_date=None ):
+        method = "/consumers/%s/checkin" % self.sanitize(consumerId)
+        # add the optional date to the url
+        if checkin_date:
+            method = "%s?checkin_date=%s" % (method,
+                    self.sanitize(checkin_date.isoformat(), plus=True))
+
+        return self.conn.request_put(method)
 
     def checkin(self, consumerId, checkin_date=None ):
         method = "/consumers/%s/checkin" % self.sanitize(consumerId)
