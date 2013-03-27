@@ -633,7 +633,7 @@ class UEPConnection:
 
     def registerConsumer(self, name="unknown", type="system", facts={},
             owner=None, environment=None, keys=None,
-            installed_products=None):
+            installed_products=None, uuid=None):
         """
         Creates a consumer on candlepin server
         """
@@ -642,6 +642,9 @@ class UEPConnection:
                   "facts": facts}
         if installed_products:
             params['installedProducts'] = installed_products
+
+        if uuid:
+            params['uuid'] = uuid
 
         url = "/consumers"
         if environment:
@@ -737,6 +740,16 @@ class UEPConnection:
         method = '/consumers/'
         if owner:
             method = "%s?owner=%s" % (method, owner)
+        return self.conn.request_get(method)
+
+    def getConsumers(self, owner=None):
+        """
+        Returns a list of consumers
+        """
+        method = '/consumers/'
+        if owner:
+            method = "%s?owner=%s" % (method, owner)
+
         return self.conn.request_get(method)
 
     def getOwner(self, uuid):
